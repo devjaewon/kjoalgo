@@ -4,6 +4,7 @@
 # include <iostream>
 # include <stack>
 # include <vector>
+# include <queue>
 
 using namespace std;
 
@@ -38,7 +39,34 @@ public:
         _size = 1;
     }
 
-    // 4 -> 3 -> 2 -> 1 -> 6 -> 5 -> 7
+    void insert(const Data& newData) {
+        queue<Node<Data>*> history_queue;
+
+        history_queue.push(_root);
+
+        while (!history_queue.empty()) {
+            Node<Data>* node = history_queue.front();
+            
+            history_queue.pop();
+            
+            if (!node->_left) {
+                node->_left = new Node<Data>(newData);
+                _size++;
+                break;
+            } else {
+                history_queue.push(node->_left);
+            }
+
+            if (!node->_right) {
+                node->_right = new Node<Data>(newData);
+                _size++;
+                break;
+            } else {
+                history_queue.push(node->_right);
+            }
+        }
+    }
+
     void printPathByInorderDFS() {
         stack<Node<Data>*> history_stack;
         Node<Data>* cursor = _root;
@@ -75,6 +103,10 @@ int main() {
     tree._root->_right->_left = new Node<int>(6);
     tree._root->_right->_right = new Node<int>(7);
     
+    // inorder traversal:  4 > 3 > 2 > 1 > 6 > 5 > 7
+    tree.printPathByInorderDFS();
+    // insert and inorder traversal: 4 > 3 > 2 > 8 > 1 > 6 > 5 > 7 
+    tree.insert(8);
     tree.printPathByInorderDFS();
 }
 
