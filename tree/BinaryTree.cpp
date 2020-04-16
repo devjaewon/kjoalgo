@@ -39,6 +39,7 @@ public:
         _size = 1;
     }
 
+    // O(N) Time Complexity using Big-O
     void insert(const Data& newData) {
         queue<Node<Data>*> history_queue;
 
@@ -68,6 +69,7 @@ public:
     }
 
     // left > root > right
+    // O(N) Time Complexity using Big-O
     void printPathByInorderDFS() {
         stack<Node<Data>*> history_stack;
         vector<Data> order;
@@ -90,6 +92,7 @@ public:
     }
 
     // root > left > right
+    // O(N) Time Complexity using Big-O
     void printPathByPreorderDFS() {
         stack<Node<Data>*> history_stack;
         vector<Data> order = {};
