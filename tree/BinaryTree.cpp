@@ -46,7 +46,7 @@ public:
         history_queue.push(_root);
 
         while (!history_queue.empty()) {
-            Node<Data>* node = history_queue.front();
+            Node<Data> *node = history_queue.front();
             
             history_queue.pop();
             
@@ -73,7 +73,7 @@ public:
     void printPathByInorderDFS() {
         stack<Node<Data>*> history_stack;
         vector<Data> order;
-        Node<Data>* cursor = _root;
+        Node<Data> *cursor = _root;
 
         while (cursor || !history_stack.empty()) {
             while (cursor) {
@@ -87,6 +87,7 @@ public:
             cursor = cursor->_right;
         }
 
+        cout << "InorderDFS:\t";
         printOrderedVector(order);
         cout << endl;
     }
@@ -95,8 +96,8 @@ public:
     // O(N) Time Complexity using Big-O
     void printPathByPreorderDFS() {
         stack<Node<Data>*> history_stack;
-        vector<Data> order = {};
-        Node<Data>* cursor = _root;
+        vector<Data> order;
+        Node<Data> *cursor = _root;
 
         while (cursor) {
             while (cursor) {
@@ -112,6 +113,46 @@ public:
             }
         }
 
+        cout << "PreorderDFS:\t";
+        printOrderedVector(order);
+        cout << endl;
+    }
+
+    // left > right > root
+    void printPathByPostorderDFS() {
+        stack<Node<Data>*> history_stack;
+        vector<Data> order;
+        Node<Data> *cursor = _root;
+
+        do {
+           while (cursor) {
+                if (cursor->_right) {
+                    history_stack.push(cursor->_right);
+                }
+                history_stack.push(cursor);
+                cursor = cursor->_left;
+            }
+
+            cursor = history_stack.top();
+            history_stack.pop();  
+
+            if (!cursor) continue;
+
+            if (
+                cursor->_right
+                && history_stack.size() > 0
+                && history_stack.top() == cursor->_right
+            ) {
+                history_stack.pop();
+                history_stack.push(cursor);
+                cursor = cursor->_right;
+            } else {
+                order.push_back(cursor->_data); 
+                cursor = 0;
+            }
+        } while (!history_stack.empty());
+
+        cout << "PostorderDFS:\t";
         printOrderedVector(order);
         cout << endl;
     }
@@ -135,6 +176,8 @@ int main() {
     tree.printPathByInorderDFS();
     // preorder traversal: 1 > 2 > 3 > 4 > 5 > 6 > 7
     tree.printPathByPreorderDFS();
+    // postorder traversal: 4 > 3 > 2 > 6 > 7 > 5 > 1
+    tree.printPathByPostorderDFS();
     // insert and inorder traversal: 4 > 3 > 2 > 8 > 1 > 6 > 5 > 7 
     tree.insert(8);
     tree.printPathByInorderDFS();
