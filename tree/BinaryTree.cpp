@@ -67,10 +67,11 @@ public:
         }
     }
 
+    // left > root > right
     void printPathByInorderDFS() {
         stack<Node<Data>*> history_stack;
+        vector<Data> order;
         Node<Data>* cursor = _root;
-        vector<Data> order = {};
 
         while (cursor || !history_stack.empty()) {
             while (cursor) {
@@ -82,6 +83,30 @@ public:
             history_stack.pop();
             order.push_back(cursor->_data);
             cursor = cursor->_right;
+        }
+
+        printOrderedVector(order);
+        cout << endl;
+    }
+
+    // root > left > right
+    void printPathByPreorderDFS() {
+        stack<Node<Data>*> history_stack;
+        vector<Data> order = {};
+        Node<Data>* cursor = _root;
+
+        while (cursor) {
+            while (cursor) {
+                order.push_back(cursor->_data);
+                if (cursor->_right) 
+                    history_stack.push(cursor->_right);
+                cursor = cursor->_left;
+            }
+
+            if (!history_stack.empty()) {
+                cursor = history_stack.top();
+                history_stack.pop();
+            }
         }
 
         printOrderedVector(order);
@@ -105,6 +130,8 @@ int main() {
     
     // inorder traversal:  4 > 3 > 2 > 1 > 6 > 5 > 7
     tree.printPathByInorderDFS();
+    // preorder traversal: 1 > 2 > 3 > 4 > 5 > 6 > 7
+    tree.printPathByPreorderDFS();
     // insert and inorder traversal: 4 > 3 > 2 > 8 > 1 > 6 > 5 > 7 
     tree.insert(8);
     tree.printPathByInorderDFS();
