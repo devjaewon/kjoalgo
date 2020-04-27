@@ -11,15 +11,15 @@ using namespace std;
 void printOrderedVector(vector<int> ordered_vector);
 
 template <typename Data>
-class Node {
+class BinaryTreeNode {
 // 예제 트리의 간편한 초기화를 위한 멤버 public 화
 public:
     Data _data;
-    Node *_left;
-    Node *_right;
+    BinaryTreeNode* _left;
+    BinaryTreeNode* _right;
 
 public:
-    Node(const Data& data) {
+    BinaryTreeNode(const Data& data) {
         _data = data;
         _left = 0;
         _right = 0;
@@ -30,28 +30,28 @@ template <typename Data>
 class BinaryTree {
 // 예제 트리의 간편한 초기화를 위한 멤버 public 화
 public:
-    Node<Data> *_root;
+    BinaryTreeNode<Data>* _root;
     unsigned int _size;
 
 public:
     BinaryTree(const Data& rootData) {
-        _root = new Node<Data>(rootData);
+        _root = new BinaryTreeNode<Data>(rootData);
         _size = 1;
     }
 
     // O(N) Time Complexity using Big-O
     void insert(const Data& newData) {
-        queue<Node<Data>*> history_queue;
+        queue<BinaryTreeNode<Data>*> history_queue;
 
         history_queue.push(_root);
 
         while (!history_queue.empty()) {
-            Node<Data> *node = history_queue.front();
+            BinaryTreeNode<Data>* node = history_queue.front();
             
             history_queue.pop();
             
             if (!node->_left) {
-                node->_left = new Node<Data>(newData);
+                node->_left = new BinaryTreeNode<Data>(newData);
                 _size++;
                 break;
             } else {
@@ -59,7 +59,7 @@ public:
             }
 
             if (!node->_right) {
-                node->_right = new Node<Data>(newData);
+                node->_right = new BinaryTreeNode<Data>(newData);
                 _size++;
                 break;
             } else {
@@ -71,9 +71,9 @@ public:
     // left > root > right
     // O(N) Time Complexity using Big-O
     void printPathByInorderDFS() {
-        stack<Node<Data>*> history_stack;
+        stack<BinaryTreeNode<Data>*> history_stack;
         vector<Data> order;
-        Node<Data> *cursor = _root;
+        BinaryTreeNode<Data>* cursor = _root;
 
         while (cursor || !history_stack.empty()) {
             while (cursor) {
@@ -95,9 +95,9 @@ public:
     // root > left > right
     // O(N) Time Complexity using Big-O
     void printPathByPreorderDFS() {
-        stack<Node<Data>*> history_stack;
+        stack<BinaryTreeNode<Data>*> history_stack;
         vector<Data> order;
-        Node<Data> *cursor = _root;
+        BinaryTreeNode<Data>* cursor = _root;
 
         while (cursor) {
             while (cursor) {
@@ -120,9 +120,9 @@ public:
 
     // left > right > root
     void printPathByPostorderDFS() {
-        stack<Node<Data>*> history_stack;
+        stack<BinaryTreeNode<Data>*> history_stack;
         vector<Data> order;
-        Node<Data> *cursor = _root;
+        BinaryTreeNode<Data>* cursor = _root;
 
         do {
            while (cursor) {
@@ -165,12 +165,12 @@ int main() {
     //     2   5
     //    3   6  7
     //   4
-    tree._root->_left = new Node<int>(2);
-    tree._root->_left->_left = new Node<int>(3);
-    tree._root->_left->_left->_left = new Node<int>(4);
-    tree._root->_right = new Node<int>(5);
-    tree._root->_right->_left = new Node<int>(6);
-    tree._root->_right->_right = new Node<int>(7);
+    tree._root->_left = new BinaryTreeNode<int>(2);
+    tree._root->_left->_left = new BinaryTreeNode<int>(3);
+    tree._root->_left->_left->_left = new BinaryTreeNode<int>(4);
+    tree._root->_right = new BinaryTreeNode<int>(5);
+    tree._root->_right->_left = new BinaryTreeNode<int>(6);
+    tree._root->_right->_right = new BinaryTreeNode<int>(7);
     
     // inorder traversal:  4 > 3 > 2 > 1 > 6 > 5 > 7
     tree.printPathByInorderDFS();

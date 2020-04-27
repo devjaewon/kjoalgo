@@ -12,15 +12,15 @@ template <typename Data>
 class BinarySearchTree;
 
 template <typename Data>
-class Node {
+class BSTNode {
     friend class BinarySearchTree<Data>;
 public:
     Data _data;
-    Node *_left;
-    Node *_right;
+    BSTNode* _left;
+    BSTNode* _right;
 
 public:
-    Node(const Data& data) {
+    BSTNode(const Data& data) {
         _data = data;
         _left = 0;
         _right = 0;
@@ -30,22 +30,22 @@ public:
 template <typename Data>
 class BinarySearchTree {
 public:
-    Node<Data> *_root;
+    BSTNode<Data>* _root;
     int size;
 
 public:
     BinarySearchTree(const Data& rootData) {
-        _root = new Node<Data>(rootData);
+        _root = new BSTNode<Data>(rootData);
         size = 1;
     }
 
     // O(H) Time Complexity using Big-O
     void insert(const Data& data) {
-        Node<Data> *cursor = _root;
+        BSTNode<Data>* cursor = _root;
         
         while (true) {
             bool isBigger = data >= cursor->_data;
-            Node<Data> *next = isBigger ? cursor->_right : cursor->_left;
+            BSTNode<Data>* next = isBigger ? cursor->_right : cursor->_left;
 
             if (next) {
                 cursor = next;
@@ -53,9 +53,9 @@ public:
             }
 
             if (isBigger)
-                cursor->_right = new Node<Data>(data);
+                cursor->_right = new BSTNode<Data>(data);
             else
-                cursor->_left = new Node<Data>(data);
+                cursor->_left = new BSTNode<Data>(data);
             
             break;
         }
@@ -65,7 +65,7 @@ public:
 
     // O(H) Time Complexity using Big-O
     void searchAndPrintPath(const Data& data) {
-        Node<Data> *cursor = _root;
+        BSTNode<Data> *cursor = _root;
         vector<Data> paths;
 
         while (cursor) {
