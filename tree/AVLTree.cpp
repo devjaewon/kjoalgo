@@ -55,29 +55,6 @@ public:
         size = 1;
     }
 
-    void insert(const Data& data) {
-        cout << "<Data " << data << " Insertion>" << endl;
-
-        vector<AVLTreeNode<Data>*> trace;
-        AVLTreeNode<Data>* cursor = _root;
-        bool isLeftDirection;
-        
-        trace.reserve(_root->getHeight());
-
-        while (cursor) {
-            isLeftDirection = cursor->_data > data;
-            trace.push_back(cursor);
-            cursor = isLeftDirection ? cursor->_left : cursor->_right;
-        }
-
-        if (isLeftDirection)
-            trace.back()->_left = new AVLTreeNode<Data>(data);
-        else
-            trace.back()->_right = new AVLTreeNode<Data>(data);
-        
-        _root = AVLTree<Data>::rebalance(trace);
-    }
-
     void printPathByInorder() {
         stack<AVLTreeNode<Data>*> trace;
         vector<Data> order;
@@ -99,6 +76,29 @@ public:
         for (auto& element : order)
             cout << element << " ";
         cout << endl;
+    }
+
+    void insert(const Data& data) {
+        cout << "<Data " << data << " Insertion>" << endl;
+
+        vector<AVLTreeNode<Data>*> trace;
+        AVLTreeNode<Data>* cursor = _root;
+        bool isLeftDirection;
+        
+        trace.reserve(_root->getHeight());
+
+        while (cursor) {
+            isLeftDirection = cursor->_data > data;
+            trace.push_back(cursor);
+            cursor = isLeftDirection ? cursor->_left : cursor->_right;
+        }
+
+        if (isLeftDirection)
+            trace.back()->_left = new AVLTreeNode<Data>(data);
+        else
+            trace.back()->_right = new AVLTreeNode<Data>(data);
+        
+        _root = AVLTree<Data>::rebalance(trace);
     }
 
     static AVLTreeNode<Data>* rebalance(vector<AVLTreeNode<Data>*> trace) {
