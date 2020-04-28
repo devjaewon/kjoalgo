@@ -114,11 +114,21 @@ public:
     };
 
     static AVLTreeNode<Data>* rotateLeft(AVLTreeNode<Data>* parent) {
-        return parent;
+        AVLTreeNode<Data>* newParent = parent->_right;
+
+        parent->_right = newParent->_left;
+        newParent->_left = parent;
+
+        return newParent;
     }
 
     static AVLTreeNode<Data>* rotateRight(AVLTreeNode<Data>* parent) {
-        return parent;
+        AVLTreeNode<Data>* newParent = parent->_left;
+        
+        parent->_left = newParent->_right;
+        newParent->_right = parent;
+
+        return newParent;
     }
 };
 
