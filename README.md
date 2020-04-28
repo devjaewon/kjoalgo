@@ -6,7 +6,7 @@
 - Binary Tree - [Source Code](https://github.com/load0ne/algo/blob/master/tree/BinaryTree.cpp)
 - Binary Search Tree - [Source Code](https://github.com/load0ne/algo/blob/master/tree/BinarySearchTree.cpp)
 - Balanced Binary Search Tree
-    - AVL Tree
+    - AVL Tree - [Source Code](https://github.com/load0ne/algo/blob/master/tree/AVLTree.cpp)
     - Red Black Tree
     - B Tree
     - B+ Tree
