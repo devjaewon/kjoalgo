@@ -1,6 +1,6 @@
 // Created by Jaewon Kim on 2020/04/27
 // Copyright © 2020 jaewonkim. All rights reserved.
-// [Recursive Method]
+// [Itrative Method]
 
 #include <iostream>
 #include <stack>
@@ -28,21 +28,6 @@ public:
         _right = 0;
     }
 
-    void balance() {
-        int bf = getBalanceFactor();
-
-        if (bf <= -2) {
-            int leftBf = _left ? _left->getBalanceFactor() : 0;
-            if (leftBf <= -1) rotateLL();
-            else rotateLR();
-        } else if (bf >=2) {
-            int rightBf = _right ? _right->getBalanceFactor() : 0;
-            if (rightBf >= 1) rotateRR();
-            else rotateRL();
-        }
-    }
-
-private:
     int getHeight() {
         int leftHeight = _left ? _left->getHeight() : 0;
         int rightHeight = _right ? _right->getHeight() : 0;
@@ -55,22 +40,6 @@ private:
         int rightHeight = _right ? _right->getHeight() : 0;
 
         return leftHeight - rightHeight;
-    }
-    
-    void rotateLL() {
-        // TODO
-    }
-
-    void rotateLR() {
-        // TODO
-    }
-
-    void rotateRR() {
-        // TODO
-    }
-
-    void rotateRL() {
-        // TODO
     }
 };
 
@@ -87,22 +56,64 @@ public:
     }
 
     void insert(const Data& data) {
+        vector<AVLTreeNode<Data>*> trace;
         AVLTreeNode<Data>* cursor = _root;
-        AVLTreeNode<Data>* prev;
         bool isLeftDirection;
+
+        trace.reserve(_root->getHeight());
 
         while (cursor) {
             isLeftDirection = cursor->_data > data;
-            prev = cursor;
+            trace.push_back(cursor);
             cursor = isLeftDirection ? cursor->_left : cursor->_right;
         }
 
         if (isLeftDirection)
-            prev->_left = new AVLTreeNode<Data>(data);
+            trace.back()->_left = new AVLTreeNode<Data>(data);
         else
-            prev->_right = new AVLTreeNode<Data>(data);
+            trace.back()->_right = new AVLTreeNode<Data>(data);
     
-        _root->balance();
+        AVLTree<Data>::rebalance(trace);
+    }
+
+    static void rebalance(vector<AVLTreeNode<Data>*> trace) {
+        int index = trace.size() - 1;
+
+        while (index >= 0) {
+            AVLTreeNode<Data>* parent = trace[index];
+            int bf = parent->getBalanceFactor();
+
+            if (bf > 1) {
+                int leftBf = parent->_left ? parent->_left->getBalanceFactor() : 0;
+                if (leftBf < 0)
+                    AVLTree<Data>::rotateLL(parent);
+                else
+                    AVLTree<Data>::rotateLR(parent);
+            } else if (bf < -1) {
+                int rightBf = parent->_right ? parent->_right->getBalanceFactor() : 0;
+                if (rightBf > 0)
+                    AVLTree<Data>::rotateRR(parent);
+                else 
+                    AVLTree<Data>::rotateRL(parent);
+            }
+            index--;
+        }
+    };
+
+    static void rotateLL(AVLTreeNode<Data>* parent) {
+        // TODO
+    }
+
+    static void rotateLR(AVLTreeNode<Data>* parent) {
+        // TODO
+    }
+
+    static void rotateRR(AVLTreeNode<Data>* parent) {
+        // TODO
+    }
+
+    static void rotateRL(AVLTreeNode<Data>* parent) {
+        // TODO
     }
 };
 
