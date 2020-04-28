@@ -73,47 +73,52 @@ public:
         else
             trace.back()->_right = new AVLTreeNode<Data>(data);
     
-        AVLTree<Data>::rebalance(trace);
+        _root = AVLTree<Data>::rebalance(trace);
     }
 
-    static void rebalance(vector<AVLTreeNode<Data>*> trace) {
+    static AVLTreeNode<Data>* rebalance(vector<AVLTreeNode<Data>*> trace) {
+        AVLTreeNode<Data>* root = trace[0];
         int index = trace.size() - 1;
 
         while (index >= 0) {
             AVLTreeNode<Data>* parent = trace[index];
+            AVLTreeNode<Data>* newParent;
             int bf = parent->getBalanceFactor();
 
             if (bf > 1) {
                 int leftBf = parent->_left ? parent->_left->getBalanceFactor() : 0;
-                if (leftBf < 0)
-                    AVLTree<Data>::rotateLL(parent);
-                else
-                    AVLTree<Data>::rotateLR(parent);
+                if (leftBf < 0) {
+                    parent->_left = AVLTree<Data>::rotateLeft(parent->_left);
+                }
+                newParent = AVLTree<Data>::rotateRight(parent);
             } else if (bf < -1) {
                 int rightBf = parent->_right ? parent->_right->getBalanceFactor() : 0;
-                if (rightBf > 0)
-                    AVLTree<Data>::rotateRR(parent);
-                else 
-                    AVLTree<Data>::rotateRL(parent);
+                if (rightBf > 0) {
+                    parent->_right = AVLTree<Data>::rotateRight(parent->_right);
+                }
+                newParent = AVLTree<Data>::rotateLeft(parent);
             }
+
+            if (index == 0) {
+                if (newParent) root = newParent;
+            } else if (trace[index-1]->_left == parent) {
+                trace[index-1]->_left = newParent;
+            } else if (trace[index-1]->_right == parent) {
+                trace[index-1]->_right = newParent;
+            }
+
             index--;
         }
+
+        return root;
     };
 
-    static void rotateLL(AVLTreeNode<Data>* parent) {
-        // TODO
+    static AVLTreeNode<Data>* rotateLeft(AVLTreeNode<Data>* parent) {
+        return parent;
     }
 
-    static void rotateLR(AVLTreeNode<Data>* parent) {
-        // TODO
-    }
-
-    static void rotateRR(AVLTreeNode<Data>* parent) {
-        // TODO
-    }
-
-    static void rotateRL(AVLTreeNode<Data>* parent) {
-        // TODO
+    static AVLTreeNode<Data>* rotateRight(AVLTreeNode<Data>* parent) {
+        return parent;
     }
 };
 
