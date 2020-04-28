@@ -56,10 +56,12 @@ public:
     }
 
     void insert(const Data& data) {
+        cout << "<Data " << data << " Insertion>" << endl;
+
         vector<AVLTreeNode<Data>*> trace;
         AVLTreeNode<Data>* cursor = _root;
         bool isLeftDirection;
-
+        
         trace.reserve(_root->getHeight());
 
         while (cursor) {
@@ -72,17 +74,39 @@ public:
             trace.back()->_left = new AVLTreeNode<Data>(data);
         else
             trace.back()->_right = new AVLTreeNode<Data>(data);
-    
+        
         _root = AVLTree<Data>::rebalance(trace);
+    }
+
+    void printPathByInorder() {
+        stack<AVLTreeNode<Data>*> trace;
+        vector<Data> order;
+        AVLTreeNode<Data>* cursor = _root;
+        
+        while (cursor || !trace.empty()) {
+            while (cursor) {
+                trace.push(cursor);
+                cursor = cursor->_left;
+            }
+
+            cursor = trace.top();
+            trace.pop();
+            order.push_back(cursor->_data);
+            cursor = cursor->_right;
+        }
+
+        cout << "Inorder Paths:\t";
+        for (auto& element : order)
+            cout << element << " ";
+        cout << endl;
     }
 
     static AVLTreeNode<Data>* rebalance(vector<AVLTreeNode<Data>*> trace) {
         AVLTreeNode<Data>* root = trace[0];
         int index = trace.size() - 1;
-
         while (index >= 0) {
             AVLTreeNode<Data>* parent = trace[index];
-            AVLTreeNode<Data>* newParent;
+            AVLTreeNode<Data>* newParent = 0;
             int bf = parent->getBalanceFactor();
 
             if (bf > 1) {
@@ -99,12 +123,15 @@ public:
                 newParent = AVLTree<Data>::rotateLeft(parent);
             }
 
-            if (index == 0) {
-                if (newParent) root = newParent;
-            } else if (trace[index-1]->_left == parent) {
-                trace[index-1]->_left = newParent;
-            } else if (trace[index-1]->_right == parent) {
-                trace[index-1]->_right = newParent;
+            if (newParent) {
+                cout << "Rebalance!" << endl;
+                if (index == 0) {
+                    root = newParent;
+                } else if (trace[index-1]->_left == parent) {
+                    trace[index-1]->_left = newParent;
+                } else if (trace[index-1]->_right == parent) {
+                    trace[index-1]->_right = newParent;
+                }
             }
 
             index--;
@@ -133,16 +160,28 @@ public:
 };
 
 int main() {
-    //           30
-    //    10            45
-    // 5            35       60
     AVLTree<int> tree = AVLTree<int>{ 30 };
 
     tree.insert(10);
     tree.insert(45);
     tree.insert(5);
-    tree.insert(35);
-    tree.insert(60);
+    //    45
+    // 30
+    //    10
+    //       5
+    tree.printPathByInorder();
+    tree.insert(2);
+    //    45
+    // 30
+    //       10
+    //    5
+    //       2
+    tree.printPathByInorder();
+    tree.insert(25);
+    tree.printPathByInorder();
+    tree.insert(26);
+    tree.insert(27);
+    tree.printPathByInorder();
 
     return 0;
 }
