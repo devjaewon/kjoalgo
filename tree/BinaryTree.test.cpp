@@ -24,5 +24,7 @@ int main() {
     tree.printPathByPreOrder();
     // PostOrder Traversal: 8 > 4 > 5 > 2 > 6 > 7 > 3 > 1
     tree.printPathByPostOrder();
+
+    return 0;
 }
 

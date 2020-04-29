@@ -20,13 +20,11 @@ class BinaryTree;
  */
 template <typename Key>
 class BinaryTreeNode {
-    friend class BinaryTree<Key>;
-protected:
+public:
     BinaryTreeNode<Key>* left;
     BinaryTreeNode<Key>* right;
     Key key;
 
-public:
     BinaryTreeNode(const Key& initial_key) {
         left = 0;
         right = 0;
@@ -45,6 +43,11 @@ protected:
     unsigned int size;
 
 public:
+    BinaryTree() {
+        root = 0;
+        size = 0;
+    }
+
     BinaryTree(const Key& root_key) {
         root = new BinaryTreeNode<Key>(root_key);
         size = 1;
