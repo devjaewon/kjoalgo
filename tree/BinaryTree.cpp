@@ -8,152 +8,188 @@
 
 using namespace std;
 
-void printOrderedVector(vector<int> ordered_vector);
+template <typename Key>
+class BinaryTree;
 
-template <typename Data>
+/**
+ * @description
+ *  Binary Tree Node Class
+ */
+template <typename Key>
 class BinaryTreeNode {
-// 예제 트리의 간편한 초기화를 위한 멤버 public 화
-public:
-    Data _data;
-    BinaryTreeNode* _left;
-    BinaryTreeNode* _right;
+    friend class BinaryTree<Key>;
+protected:
+    BinaryTreeNode<Key>* left;
+    BinaryTreeNode<Key>* right;
+    Key key;
 
 public:
-    BinaryTreeNode(const Data& data) {
-        _data = data;
-        _left = 0;
-        _right = 0;
+    BinaryTreeNode(const Key& initial_key) {
+        left = 0;
+        right = 0;
+        key = initial_key;
     }
 };
 
-template <typename Data>
+/**
+ * @description
+ *  Binary Tree Class
+ */
+template <typename Key>
 class BinaryTree {
-// 예제 트리의 간편한 초기화를 위한 멤버 public 화
-public:
-    BinaryTreeNode<Data>* _root;
-    unsigned int _size;
+protected:
+    BinaryTreeNode<Key>* root;
+    unsigned int size;
 
 public:
-    BinaryTree(const Data& rootData) {
-        _root = new BinaryTreeNode<Data>(rootData);
-        _size = 1;
+    BinaryTree(const Key& root_key) {
+        root = new BinaryTreeNode<Key>(root_key);
+        size = 1;
     }
 
-    // O(N) Time Complexity using Big-O
-    void insert(const Data& newData) {
-        queue<BinaryTreeNode<Data>*> history_queue;
+    /**
+     * @description
+     *  - iterative implementation using queue
+     *  - O(N) Time Complexity by Big-O
+     */
+    void insert(const Key& new_key) {
+        queue<BinaryTreeNode<Key>*> trace_queue;
 
-        history_queue.push(_root);
+        trace_queue.push(root);
 
-        while (!history_queue.empty()) {
-            BinaryTreeNode<Data>* node = history_queue.front();
+        while (!trace_queue.empty()) {
+            BinaryTreeNode<Key>* node = trace_queue.front();
             
-            history_queue.pop();
+            trace_queue.pop();
             
-            if (!node->_left) {
-                node->_left = new BinaryTreeNode<Data>(newData);
-                _size++;
+            if (!node->left) {
+                node->left = new BinaryTreeNode<Key>(new_key);
+                size++;
                 break;
             } else {
-                history_queue.push(node->_left);
+                trace_queue.push(node->left);
             }
 
-            if (!node->_right) {
-                node->_right = new BinaryTreeNode<Data>(newData);
-                _size++;
+            if (!node->right) {
+                node->right = new BinaryTreeNode<Key>(new_key);
+                size++;
                 break;
             } else {
-                history_queue.push(node->_right);
+                trace_queue.push(node->right);
             }
         }
     }
 
-    // left > root > right
-    // O(N) Time Complexity using Big-O
-    void printPathByInorderDFS() {
-        stack<BinaryTreeNode<Data>*> history_stack;
-        vector<Data> order;
-        BinaryTreeNode<Data>* cursor = _root;
-
-        while (cursor || !history_stack.empty()) {
+    /**
+     * @description
+     *  in-order traversal: left > root > right
+     *  - iterative implementation using stack
+     *  - O(N) Time Complexity by Big-O
+     */
+    void printPathByInOrder() {
+        stack<BinaryTreeNode<Key>*> trace_stack;
+        BinaryTreeNode<Key>* cursor = root;
+        vector<Key> order;
+        
+        while (cursor || !trace_stack.empty()) {
             while (cursor) {
-                history_stack.push(cursor);
-                cursor = cursor->_left;
+                trace_stack.push(cursor);
+                cursor = cursor->left;
             }
             
-            cursor = history_stack.top();
-            history_stack.pop();
-            order.push_back(cursor->_data);
-            cursor = cursor->_right;
+            cursor = trace_stack.top();
+            trace_stack.pop();
+            order.push_back(cursor->key);
+            cursor = cursor->right;
         }
-
-        cout << "InorderDFS:\t";
-        printOrderedVector(order);
-        cout << endl;
+        
+        BinaryTree<Key>::printTraversalOrder(order, "InOrder Traversal:\t");
     }
 
-    // root > left > right
-    // O(N) Time Complexity using Big-O
-    void printPathByPreorderDFS() {
-        stack<BinaryTreeNode<Data>*> history_stack;
-        vector<Data> order;
-        BinaryTreeNode<Data>* cursor = _root;
+    /**
+     * @description
+     *  pre-order traversal: root > left > right
+     *  - iterative implementation using stack
+     *  - O(N) Time Complexity by Big-O
+     */
+    void printPathByPreOrder() {
+        stack<BinaryTreeNode<Key>*> trace_stack;
+        BinaryTreeNode<Key>* cursor = root;
+        vector<Key> order;
 
         while (cursor) {
             while (cursor) {
-                order.push_back(cursor->_data);
-                if (cursor->_right) 
-                    history_stack.push(cursor->_right);
-                cursor = cursor->_left;
+                order.push_back(cursor->key);
+                if (cursor->right) 
+                    trace_stack.push(cursor->right);
+                cursor = cursor->left;
             }
 
-            if (!history_stack.empty()) {
-                cursor = history_stack.top();
-                history_stack.pop();
+            if (!trace_stack.empty()) {
+                cursor = trace_stack.top();
+                trace_stack.pop();
             }
         }
 
-        cout << "PreorderDFS:\t";
-        printOrderedVector(order);
-        cout << endl;
+        BinaryTree<Key>::printTraversalOrder(order, "PreOrder Traversal:\t");
     }
 
-    // left > right > root
-    void printPathByPostorderDFS() {
-        stack<BinaryTreeNode<Data>*> history_stack;
-        vector<Data> order;
-        BinaryTreeNode<Data>* cursor = _root;
+    /**
+     * @description
+     *  post-order traversal: left > right > root
+     *  - iterative implementation using stack
+     *  - O(N) Time Complexity by Big-O
+     */
+    void printPathByPostOrder() {
+        stack<BinaryTreeNode<Key>*> trace_stack;
+        BinaryTreeNode<Key>* cursor = root;
+        vector<Key> order;
 
         do {
            while (cursor) {
-                if (cursor->_right) {
-                    history_stack.push(cursor->_right);
+                if (cursor->right) {
+                    trace_stack.push(cursor->right);
                 }
-                history_stack.push(cursor);
-                cursor = cursor->_left;
+                trace_stack.push(cursor);
+                cursor = cursor->left;
             }
 
-            cursor = history_stack.top();
-            history_stack.pop();  
+            cursor = trace_stack.top();
+            trace_stack.pop();  
 
-            if (!cursor) continue;
-
-            if (
-                cursor->_right
-                && history_stack.size() > 0
-                && history_stack.top() == cursor->_right
-            ) {
-                history_stack.pop();
-                history_stack.push(cursor);
-                cursor = cursor->_right;
-            } else {
-                order.push_back(cursor->_data); 
-                cursor = 0;
+            if (cursor) {
+                if (
+                    cursor->right
+                    && trace_stack.size() > 0
+                    && trace_stack.top() == cursor->right
+                ) {
+                    trace_stack.pop();
+                    trace_stack.push(cursor);
+                    cursor = cursor->right;
+                } else {
+                    order.push_back(cursor->key); 
+                    cursor = 0;
+                }
             }
-        } while (!history_stack.empty());
+        } while (!trace_stack.empty());
+        
 
-        cout << "PostorderDFS:\t";
-        printOrderedVector(order);
+        BinaryTree<Key>::printTraversalOrder(order, "PostOrder Traversal:\t");
+    }
+
+    /**
+     * @description
+     *  print order vector after format
+     */
+    static void printTraversalOrder(const vector<Key>& order, const string& prefix) {
+        unsigned int size = order.size();
+
+        cout << prefix << endl;
+        for (unsigned int i = 0; i < size; ++i) {
+            cout << order[i];
+            if (i < size - 1)
+                cout << " > ";
+        }
         cout << endl;
     }
 };
@@ -161,34 +197,23 @@ public:
 int main() {
     BinaryTree<int> tree = BinaryTree<int>{ 1 };
     
-    //       1
-    //     2   5
-    //    3   6  7
-    //   4
-    tree._root->_left = new BinaryTreeNode<int>(2);
-    tree._root->_left->_left = new BinaryTreeNode<int>(3);
-    tree._root->_left->_left->_left = new BinaryTreeNode<int>(4);
-    tree._root->_right = new BinaryTreeNode<int>(5);
-    tree._root->_right->_left = new BinaryTreeNode<int>(6);
-    tree._root->_right->_right = new BinaryTreeNode<int>(7);
-    
-    // inorder traversal:  4 > 3 > 2 > 1 > 6 > 5 > 7
-    tree.printPathByInorderDFS();
-    // preorder traversal: 1 > 2 > 3 > 4 > 5 > 6 > 7
-    tree.printPathByPreorderDFS();
-    // postorder traversal: 4 > 3 > 2 > 6 > 7 > 5 > 1
-    tree.printPathByPostorderDFS();
-    // insert and inorder traversal: 4 > 3 > 2 > 8 > 1 > 6 > 5 > 7 
+    //        1
+    //     2     3
+    //    4 5   6 7
+    //   8        
+    tree.insert(2);
+    tree.insert(3);
+    tree.insert(4);
+    tree.insert(5);
+    tree.insert(6);
+    tree.insert(7);
     tree.insert(8);
-    tree.printPathByInorderDFS();
-}
 
-void printOrderedVector(vector<int> ordered_vector) {
-    unsigned int size = ordered_vector.size();
-
-    for (unsigned int i = 0; i < size; ++i) {
-        cout << ordered_vector[i];
-        if (i < size - 1) cout << " > ";
-    }
+    // InOrder Traversal:  8 > 4 > 2 > 5 > 1 > 6 > 3 > 7
+    tree.printPathByInOrder();
+    // PreOrder Traversal: 1 > 2 > 4 > 8 > 5 > 3 > 6 > 7
+    tree.printPathByPreOrder();
+    // PostOrder Traversal: 8 > 4 > 5 > 2 > 6 > 7 > 3 > 1
+    tree.printPathByPostOrder();
 }
 
