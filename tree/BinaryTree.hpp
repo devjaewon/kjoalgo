@@ -11,24 +11,23 @@
 
 using namespace std;
 
-template <typename Key>
-class BinaryTree;
-
 /**
  * @description
  *  Binary Tree Node Class
  */
 template <typename Key>
-class BinaryTreeNode {
-public:
+struct BinaryTreeNode {
+    Key key;
     BinaryTreeNode<Key>* left;
     BinaryTreeNode<Key>* right;
-    Key key;
 
-    BinaryTreeNode(const Key& initial_key) {
-        left = 0;
-        right = 0;
-        key = initial_key;
+    BinaryTreeNode(const Key& my_key): key(my_key), left(0), right(0) {}
+
+    int getHeight() {
+        int left_height = left ? left->getHeight() : 0;
+        int right_height = right ? right->getHeight() : 0;
+
+        return left_height > right_height ? left_height + 1 : right_height + 1;
     }
 };
 

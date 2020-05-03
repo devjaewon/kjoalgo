@@ -16,6 +16,8 @@ using namespace std;
 template <typename Key>
 class BinarySearchTree : public BinaryTree<Key> {
 public:
+    BinarySearchTree(): BinaryTree<Key>() {};
+
     BinarySearchTree(const Key& key): BinaryTree<Key>(key) {};
 
     /**
