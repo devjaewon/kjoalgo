@@ -11,33 +11,10 @@
 using namespace std;
 
 template <typename Key>
-class AVLTree;
-
-template <typename Key>
-class AVLTreeNode : public BinaryTreeNode<Key> {
-public:
-    AVLTreeNode(const Key& key): BinaryTreeNode<Key>(key) {}
-
-    int getHeight() {
-        int left_height = left ? left->getHeight() : 0;
-        int right_height = right ? right->getHeight() : 0;
-        
-        return left_height > right_height ? left_height + 1 : right_height + 1;
-    }
-
-    int getBalanceFactor() {
-        int left_height = left ? left->getHeight() : 0;
-        int right_height = right ? right->getHeight() : 0;
-
-        return left_height - right_height;
-    }
-};
-
-template <typename Key>
 class AVLTree : public BinarySearchTree<Key> {
 public:
     AVLTree(const Key& root_key): BinarySearchTree<Key>() {
-        this->root = new AVLTreeNode<Key>(root_key);
+        this->root = new BinaryTreeNode<Key>(root_key);
         this->size = 1;
     }
 
@@ -49,8 +26,8 @@ public:
     void insert(const Key& new_key) {
         cout << "<Key " << new_key << " Insertion>" << endl;
 
-        vector<AVLTreeNode<Key>*> trace;
-        AVLTreeNode<Key>* cursor = dynamic_cast<AVLTreeNode<Key>*>(this->root);
+        vector<BinaryTreeNode<Key>*> trace;
+        BinaryTreeNode<Key>* cursor = this->root;
         bool is_left_direction;
         
         trace.reserve(cursor->getHeight());
@@ -62,9 +39,9 @@ public:
         }
 
         if (is_left_direction)
-            trace.back()->left = new AVLTreeNode<Key>(new_key);
+            trace.back()->left = new BinaryTreeNode<Key>(new_key);
         else
-            trace.back()->right = new AVLTreeNode<Key>(new_key);
+            trace.back()->right = new BinaryTreeNode<Key>(new_key);
         
         this->root = AVLTree<Key>::rebalance(trace);
     }
@@ -74,22 +51,23 @@ public:
      *  rebalance total tree height
      *  - use rotation
      */
-    static AVLTreeNode<Key>* rebalance(vector<AVLTreeNode<Key>*> trace) {
-        AVLTreeNode<Key>* new_root = trace[0];
+    static BinaryTreeNode<Key>* rebalance(vector<BinaryTreeNode<Key>*> trace) {
+        BinaryTreeNode<Key>* new_root = trace[0];
         int index = trace.size() - 1;
+
         while (index >= 0) {
-            AVLTreeNode<Key>* parent = trace[index];
-            AVLTreeNode<Key>* new_parent = 0;
-            int bf = parent->getBalanceFactor();
+            BinaryTreeNode<Key>* parent = trace[index];
+            BinaryTreeNode<Key>* new_parent = 0;
+            int bf = AVLTree<Key>::getBalanceFactor(parent);
 
             if (bf > 1) {
-                int left_bf = parent->left ? parent->left->getBalanceFactor() : 0;
+                int left_bf = parent->left ? AVLTree<Key>::getBalanceFactor(parent->left) : 0;
                 if (left_bf < 0) {
                     parent->left = AVLTree<Key>::rotateLeft(parent->left);
                 }
                 new_parent = AVLTree<Key>::rotateRight(parent);
             } else if (bf < -1) {
-                int right_bf = parent->right ? parent->right->getBalanceFactor() : 0;
+                int right_bf = parent->right ? AVLTree<Key>::getBalanceFactor(parent->right) : 0;
                 if (right_bf > 0) {
                     parent->right = AVLTree<Key>::rotateRight(parent->right);
                 }
@@ -113,8 +91,8 @@ public:
         return new_root;
     };
 
-    static AVLTreeNode<Key>* rotateLeft(AVLTreeNode<Key>* parent) {
-        AVLTreeNode<Key>* new_parent = parent->right;
+    static BinaryTreeNode<Key>* rotateLeft(BinaryTreeNode<Key>* parent) {
+        BinaryTreeNode<Key>* new_parent = parent->right;
 
         parent->right = new_parent->left;
         new_parent->left = parent;
@@ -122,13 +100,20 @@ public:
         return new_parent;
     }
 
-    static AVLTreeNode<Key>* rotateRight(AVLTreeNode<Key>* parent) {
-        AVLTreeNode<Key>* new_parent = parent->left;
+    static BinaryTreeNode<Key>* rotateRight(BinaryTreeNode<Key>* parent) {
+        BinaryTreeNode<Key>* new_parent = parent->left;
         
         parent->left = new_parent->right;
         new_parent->right = parent;
 
         return new_parent;
+    }
+
+    static int getBalanceFactor(BinaryTreeNode<Key>* node) {
+        int left_height = node->left ? node->left->getHeight() : 0;
+        int right_height = node->right ? node->right->getHeight() : 0;
+ 
+        return left_height - right_height;
     }
 };
 
