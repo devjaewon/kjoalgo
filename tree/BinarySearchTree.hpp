@@ -1,24 +1,31 @@
 // Created by Jaewon Kim on 2020/04/16
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
 
-# include <iostream>
-# include <stack>
-# include <vector>
-# include <queue>
-# include "./BinaryTree.hpp"
+#ifndef Algo_BinarySearchTree
+#define Algo_BinarySearchTree
 
-using namespace std;
+#include <iostream>
+#include <vector>
+#include "./BinaryTree.hpp"
+
+/**
+ * type declaration
+ */
+namespace Algo {
+    template <typename Key>
+    class BinarySearchTree;
+}
 
 /**
  * @description
- *  Binary Search Tree Class
+ *  Binary search tree class
  */
 template <typename Key>
-class BinarySearchTree : public BinaryTree<Key> {
+class Algo::BinarySearchTree : public Algo::BinaryTree<Key> {
+    using Node = Algo::BinaryTreeNode<Key>;
 public:
-    BinarySearchTree(): BinaryTree<Key>() {};
-
-    BinarySearchTree(const Key& key): BinaryTree<Key>(key) {};
+    BinarySearchTree() : Algo::BinaryTree<Key>() {}
 
     /**
      * @description
@@ -26,11 +33,18 @@ public:
      *  - O(H) Time Complexity by Big-O
      */
     void insert(const Key& new_key) {
-        BinaryTreeNode<Key>* cursor = this->root;
+        std::cout << "[LOG] Key " << new_key << " Insertion" << std::endl;
+    
+        if (!this->root) {
+            this->root = new Node{ new_key };
+            return;
+        }
+
+        Node* cursor = (Node*) this->root;
         
         while (true) {
-            bool isBigger = new_key >= cursor->key;
-            BinaryTreeNode<Key>* next = isBigger ? cursor->right : cursor->left;
+            bool isBigger = new_key >= cursor->getKey();
+            Node* next = isBigger ? cursor->getRight() : cursor->getLeft();
 
             if (next) {
                 cursor = next;
@@ -38,9 +52,9 @@ public:
             }
 
             if (isBigger)
-                cursor->right = new BinaryTreeNode<Key>(new_key);
+                cursor->setRight(new Node { new_key });
             else
-                cursor->left = new BinaryTreeNode<Key>(new_key);
+                cursor->setLeft(new Node { new_key });
             
             break;
         }
@@ -54,11 +68,11 @@ public:
      *  - O(H) Time Complexity by Big-O
      */
     void printSearchTrace(const Key& key) {
-        BinaryTreeNode<Key> *cursor = this->root;
-        vector<Key> order;
+        Node* cursor = (Node*) this->root;
+        std::vector<Key> order;
 
         while (cursor) {
-            Key current_key = cursor->key;
+            Key current_key = cursor->getKey();
 
             order.push_back(current_key);
 
@@ -66,10 +80,11 @@ public:
                 break;
 
             bool isBigger = key >= current_key;
-            cursor = isBigger ? cursor->right : cursor->left;
+            cursor = isBigger ? cursor->getRight() : cursor->getLeft();
         }
 
-        BinaryTree<Key>::printTraversalOrder(order, "Search Trace:\t");
+        Algo::BinaryTree<Key>::printTraversalOrder(order, "Search Trace:\t");
     }
 };
 
+#endif /* Algo_BinarySearchTree */

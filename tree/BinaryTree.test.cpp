@@ -1,15 +1,17 @@
 // Created by Jaewon Kim on 2020/04/29
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
 
 #include "./BinaryTree.hpp"
 
 int main() {
-    BinaryTree<int> tree = BinaryTree<int>{ 1 };
+    Algo::BinaryTree<int> tree;
 
     //        1
     //     2     3
     //    4 5   6 7
     //   8
+    tree.insert(1);
     tree.insert(2);
     tree.insert(3);
     tree.insert(4);

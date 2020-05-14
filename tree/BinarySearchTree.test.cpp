@@ -1,17 +1,18 @@
 // Created by Jaewon Kim on 2020/04/29
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
 
-#include "./BinaryTree.hpp"
 #include "./BinarySearchTree.hpp"
 
 int main() {
-    BinarySearchTree<int> tree = BinarySearchTree<int>{ 30 };
+    Algo::BinarySearchTree<int> tree;
 
     //             30
     //       25          40
     //     15          35
     //   10  17      33
     //             32
+    tree.insert(30);
     tree.insert(25);
     tree.insert(15);
     tree.insert(17);

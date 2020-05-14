@@ -1,22 +1,92 @@
 // Created by Jaewon Kim on 2020/04/27
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
-// [Itrative Method]
+
+#ifndef Algo_AVLTree
+#define Algo_AVLTree
 
 #include <iostream>
-#include <stack>
 #include <vector>
-#include <queue>
 #include "./BinarySearchTree.hpp"
 
-using namespace std;
+/**
+ * type declaration
+ */
+namespace Algo {
+    template <typename Key>
+    class AVLTreeNode;
+    template <typename Key>
+    class AVLTree;
+}
 
+/**
+ * @description
+ *  AVL tree node class
+ */
 template <typename Key>
-class AVLTree : public BinarySearchTree<Key> {
+class Algo::AVLTreeNode : public Algo::BinaryTreeNode<Key> {
+    using Node = Algo::AVLTreeNode<Key>;
 public:
-    AVLTree(const Key& root_key): BinarySearchTree<Key>() {
-        this->root = new BinaryTreeNode<Key>(root_key);
-        this->size = 1;
+    AVLTreeNode() : Algo::BinaryTreeNode<Key>() {}
+    AVLTreeNode(const Key& new_key) : Algo::BinaryTreeNode<Key>() {
+        this->children = new Node*[2] { 0, 0 };
+        this->children_count = 2;
+        this->key = new_key;
     }
+
+    /**
+     * @description
+     *  getter, setter
+     */
+    Node* getLeft() {
+        return ((Node**) this->children)[0];
+    }
+
+    Node* getRight() {
+        return ((Node**) this->children)[1];
+    }
+
+    void setLeft(Node* node_ptr) {
+        ((Node**) this->children)[0] = node_ptr;
+    }
+
+    void setRight(Node* node_ptr) {
+        ((Node**) this->children)[1] = node_ptr;
+    }
+
+    int getHeight() {
+        Node** children = (Node**) this->children;
+        Node* left = children[0];
+        Node* right = children[1];
+
+        int left_height = left ? left->getHeight() : 0;
+        int right_height = right ? right->getHeight() : 0;
+
+        return left_height > right_height ? left_height + 1 : right_height + 1;
+    }
+
+    int getBalanceFactor() {
+        Node** children = (Node**) this->children;
+        Node* left = children[0];
+        Node* right = children[1];
+
+        int left_height = left ? left->getHeight() : 0;
+        int right_height = right ? right->getHeight() : 0;
+ 
+        return left_height - right_height;
+    }
+};
+
+/**
+ * @description
+ *  AVL tree class
+ */
+template <typename Key>
+class Algo::AVLTree : public Algo::BinarySearchTree<Key> {
+    using Node = Algo::AVLTreeNode<Key>;
+    using Tree = Algo::AVLTree<Key>;
+public:
+    AVLTree() : Algo::BinarySearchTree<Key>() {}
 
     /**
      * @description
@@ -24,26 +94,34 @@ public:
      *  - O(logN) Time Complexity by Big-O
      */
     void insert(const Key& new_key) {
-        cout << "<Key " << new_key << " Insertion>" << endl;
+        std::cout << "[LOG] Key " << new_key << " Insertion" << std::endl;
 
-        vector<BinaryTreeNode<Key>*> trace;
-        BinaryTreeNode<Key>* cursor = this->root;
+        if (!this->root) {
+            this->root = new Node{ new_key };
+            return;
+        }
+
+        std::vector<Node*> trace;
+        Node* cursor = (Node*) this->root;
         bool is_left_direction;
         
         trace.reserve(cursor->getHeight());
 
         while (cursor) {
-            is_left_direction = cursor->key > new_key;
+            is_left_direction = cursor->getKey() > new_key;
             trace.push_back(cursor);
-            cursor = is_left_direction ? cursor->left : cursor->right;
+            cursor = is_left_direction ? cursor->getLeft() : cursor->getRight();
         }
 
+        Node* leaf_node = trace.back();
+        Node* new_node = new Node{ new_key };
+
         if (is_left_direction)
-            trace.back()->left = new BinaryTreeNode<Key>(new_key);
+            leaf_node->setLeft(new_node);
         else
-            trace.back()->right = new BinaryTreeNode<Key>(new_key);
+            leaf_node->setRight(new_node);
         
-        this->root = AVLTree<Key>::rebalance(trace);
+        rebalance(trace);
     }
 
     /**
@@ -51,69 +129,77 @@ public:
      *  rebalance total tree height
      *  - use rotation
      */
-    static BinaryTreeNode<Key>* rebalance(vector<BinaryTreeNode<Key>*> trace) {
-        BinaryTreeNode<Key>* new_root = trace[0];
+    void rebalance(std::vector<Node*> trace) {
+        Node* new_root = trace[0];
         int index = trace.size() - 1;
+        // std:: cout << new_root->getKey() << std::endl;
 
         while (index >= 0) {
-            BinaryTreeNode<Key>* parent = trace[index];
-            BinaryTreeNode<Key>* new_parent = 0;
-            int bf = AVLTree<Key>::getBalanceFactor(parent);
+            Node* parent = trace[index];
+            Node* new_parent = 0;
+            int bf = parent->getBalanceFactor();
 
             if (bf > 1) {
-                int left_bf = parent->left ? AVLTree<Key>::getBalanceFactor(parent->left) : 0;
+                Node* left = parent->getLeft();
+                int left_bf = left ? left->getBalanceFactor() : 0;
+                
                 if (left_bf < 0) {
-                    parent->left = AVLTree<Key>::rotateLeft(parent->left);
+                    parent->setLeft(Tree::rotateLeft(left));
                 }
-                new_parent = AVLTree<Key>::rotateRight(parent);
+                new_parent = Tree::rotateRight(parent);
             } else if (bf < -1) {
-                int right_bf = parent->right ? AVLTree<Key>::getBalanceFactor(parent->right) : 0;
+                Node* right = parent->getRight();
+                int right_bf = right ? right->getBalanceFactor() : 0;
+
                 if (right_bf > 0) {
-                    parent->right = AVLTree<Key>::rotateRight(parent->right);
+                    parent->setRight(Tree::rotateRight(right));
                 }
-                new_parent = AVLTree<Key>::rotateLeft(parent);
+                new_parent = Tree::rotateLeft(parent);
             }
 
             if (new_parent) {
-                cout << "Rebalance!" << endl;
+                std::cout << "[ALERT] Rebalance!" << std::endl;
                 if (index == 0) {
                     new_root = new_parent;
-                } else if (trace[index-1]->left == parent) {
-                    trace[index-1]->left = new_parent;
-                } else if (trace[index-1]->right == parent) {
-                    trace[index-1]->right = new_parent;
+                } else if (trace[index-1]->getLeft() == parent) {
+                    trace[index-1]->setLeft(new_parent);
+                } else if (trace[index-1]->getRight() == parent) {
+                    trace[index-1]->setRight(new_parent);
                 }
             }
 
             index--;
         }
 
-        return new_root;
+        this->root = new_root;
+        return;
     };
 
-    static BinaryTreeNode<Key>* rotateLeft(BinaryTreeNode<Key>* parent) {
-        BinaryTreeNode<Key>* new_parent = parent->right;
+    /**
+     * @description
+     *  left single rotation
+     */
+    static Node* rotateLeft(Node* parent) {
+        Node* new_parent = parent->getRight();
 
-        parent->right = new_parent->left;
-        new_parent->left = parent;
+        parent->setRight(new_parent->getLeft());
+        new_parent->setLeft(parent);
 
         return new_parent;
     }
 
-    static BinaryTreeNode<Key>* rotateRight(BinaryTreeNode<Key>* parent) {
-        BinaryTreeNode<Key>* new_parent = parent->left;
+    /**
+     * @description
+     *  right single rotation
+     */
+    static Node* rotateRight(Node* parent) {
+        Node* new_parent = parent->getLeft();
         
-        parent->left = new_parent->right;
-        new_parent->right = parent;
+        parent->setLeft(new_parent->getRight());
+        new_parent->setRight(parent);
 
         return new_parent;
-    }
-
-    static int getBalanceFactor(BinaryTreeNode<Key>* node) {
-        int left_height = node->left ? node->left->getHeight() : 0;
-        int right_height = node->right ? node->right->getHeight() : 0;
- 
-        return left_height - right_height;
     }
 };
 
+#endif /* Algo_AVLTree */

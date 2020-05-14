@@ -1,21 +1,35 @@
 // Created by Jaewon Kim on 2020/05/04
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
+
+#ifndef Algo_RedBlackTree
+#define Algo_RedBlackTree
 
 #include <iostream>
 #include "./BinarySearchTree.hpp"
 
-using namespace std;
+/**
+ * type declaration
+ */
+namespace Algo {
+    template <typename Key>
+    class RBTNode;
+    template <typename Key>
+    class RedBlackTree;
+}
 
+/**
+ * @description
+ *  Red black tree class
+ */
 template <typename Key>
-class RedBlackTree : public BinarySearchTree<Key> {
+class Algo::RedBlackTree : public Algo::BinarySearchTree<Key> {
 public:
-    RedBlackTree(const Key& root_key): BinarySearchTree() {
-        this->root = new BinaryTreeNode<Key>(root_key);
-        this->size = 1;
-    }
+    RedBlackTree() : Algo::BinarySearchTree<Key>() {}
 
     void insert(const Key& new_key) {
         // TODO
     }
 };
 
+#endif /* Algo_RedBlackTree */

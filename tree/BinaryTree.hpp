@@ -1,33 +1,59 @@
 // Created by Jaewon Kim on 2020/04/15
+// Updated By Jaewon Kim on 2020/05/14
 // Copyright © 2020 jaewonkim. All rights reserved.
 
-#ifndef AlgoBinaryTree
-#define AlgoBinaryTree
+#ifndef Algo_BinaryTree
+#define Algo_BinaryTree
 
-# include <iostream>
-# include <stack>
-# include <vector>
-# include <queue>
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <queue>
+#include "./Tree.hpp"
 
-using namespace std;
+/**
+ * type declaration
+ */
+namespace Algo {
+    template <typename Key>
+    class BinaryTreeNode;
+    template <typename Key>
+    class BinaryTree;
+}
 
 /**
  * @description
  *  Binary Tree Node Class
  */
 template <typename Key>
-struct BinaryTreeNode {
-    Key key;
-    BinaryTreeNode<Key>* left;
-    BinaryTreeNode<Key>* right;
+class Algo::BinaryTreeNode : public Algo::TreeNode<Key> {
+    using Node = Algo::BinaryTreeNode<Key>;
+public:
+    BinaryTreeNode() : Algo::TreeNode<Key>() {}
+    BinaryTreeNode(const Key& new_key) : Algo::TreeNode<Key>() {
+        this->children = new Node*[2] { 0, 0 };
+        this->children_count = 2;
+        this->key = new_key;
+    }
 
-    BinaryTreeNode(const Key& my_key): key(my_key), left(0), right(0) {}
+    /**
+     * @description
+     *  getter, setter
+     */
+    Node* getLeft() {
+        return ((Node**) this->children)[0];
+    }
 
-    int getHeight() {
-        int left_height = left ? left->getHeight() : 0;
-        int right_height = right ? right->getHeight() : 0;
+    Node* getRight() {
+        return ((Node**) this->children)[1];
+    }
 
-        return left_height > right_height ? left_height + 1 : right_height + 1;
+    void setLeft(Node* node_ptr) {
+        ((Node**) this->children)[0] = node_ptr;
+    }
+
+    void setRight(Node* node_ptr) {
+        ((Node**) this->children)[1] = node_ptr;
     }
 };
 
@@ -36,21 +62,10 @@ struct BinaryTreeNode {
  *  Binary Tree Class
  */
 template <typename Key>
-class BinaryTree {
-protected:
-    BinaryTreeNode<Key>* root;
-    unsigned int size;
-
+class Algo::BinaryTree : public Algo::Tree<Key> {
+    using Node = Algo::BinaryTreeNode<Key>;
 public:
-    BinaryTree() {
-        root = 0;
-        size = 0;
-    }
-
-    BinaryTree(const Key& root_key) {
-        root = new BinaryTreeNode<Key>(root_key);
-        size = 1;
-    }
+    BinaryTree() : Algo::Tree<Key>() {}
 
     /**
      * @description
@@ -58,29 +73,38 @@ public:
      *  - O(N) Time Complexity by Big-O
      */
     void insert(const Key& new_key) {
-        queue<BinaryTreeNode<Key>*> trace_queue;
+        std::cout << "[LOG] Key " << new_key << " Insertion" << std::endl;
 
-        trace_queue.push(root);
+        if (!this->root) {
+            this->root = new Node{ new_key };
+            return;
+        }
+
+        std::queue<Node*> trace_queue;
+
+        trace_queue.push((Node*) this->root);
 
         while (!trace_queue.empty()) {
-            BinaryTreeNode<Key>* node = trace_queue.front();
-            
+            Node* node = trace_queue.front();
+            Node* left = node->getLeft();
+            Node* right = node->getRight();
+
             trace_queue.pop();
             
-            if (!node->left) {
-                node->left = new BinaryTreeNode<Key>(new_key);
-                size++;
+            if (!left) {
+                node->setLeft(new Node{ new_key });
+                this->size++;
                 break;
             } else {
-                trace_queue.push(node->left);
+                trace_queue.push(left);
             }
 
-            if (!node->right) {
-                node->right = new BinaryTreeNode<Key>(new_key);
-                size++;
+            if (!right) {
+                node->setRight(new Node{ new_key });
+                this->size++;
                 break;
             } else {
-                trace_queue.push(node->right);
+                trace_queue.push(right);
             }
         }
     }
@@ -92,20 +116,20 @@ public:
      *  - O(N) Time Complexity by Big-O
      */
     void printPathByInOrder() {
-        stack<BinaryTreeNode<Key>*> trace_stack;
-        BinaryTreeNode<Key>* cursor = root;
-        vector<Key> order;
+        std::stack<Node*> trace_stack;
+        std::vector<Key> order;
+        Node* cursor = (Node*) this->root;
         
         while (cursor || !trace_stack.empty()) {
             while (cursor) {
                 trace_stack.push(cursor);
-                cursor = cursor->left;
+                cursor = cursor->getLeft();
             }
             
             cursor = trace_stack.top();
             trace_stack.pop();
-            order.push_back(cursor->key);
-            cursor = cursor->right;
+            order.push_back(cursor->getKey());
+            cursor = cursor->getRight();
         }
         
         BinaryTree<Key>::printTraversalOrder(order, "InOrder Traversal:\t");
@@ -118,16 +142,19 @@ public:
      *  - O(N) Time Complexity by Big-O
      */
     void printPathByPreOrder() {
-        stack<BinaryTreeNode<Key>*> trace_stack;
-        BinaryTreeNode<Key>* cursor = root;
-        vector<Key> order;
+        std::stack<Node*> trace_stack;
+        std::vector<Key> order;
+        Node* cursor = (Node*) this->root;
 
         while (cursor) {
             while (cursor) {
-                order.push_back(cursor->key);
-                if (cursor->right) 
-                    trace_stack.push(cursor->right);
-                cursor = cursor->left;
+                Node* left = cursor->getLeft();
+                Node* right = cursor->getRight();
+
+                order.push_back(cursor->getKey());
+                if (right) 
+                    trace_stack.push(right);
+                cursor = left;
             }
 
             if (!trace_stack.empty()) {
@@ -146,33 +173,37 @@ public:
      *  - O(N) Time Complexity by Big-O
      */
     void printPathByPostOrder() {
-        stack<BinaryTreeNode<Key>*> trace_stack;
-        BinaryTreeNode<Key>* cursor = root;
-        vector<Key> order;
+        std::stack<Node*> trace_stack;
+        std::vector<Key> order;
+        Node* cursor = (Node*) this->root;
 
         do {
            while (cursor) {
-                if (cursor->right) {
-                    trace_stack.push(cursor->right);
-                }
+               Node* left = cursor->getLeft();
+               Node* right = cursor->getRight();
+
+                if (right)
+                    trace_stack.push(right);
                 trace_stack.push(cursor);
-                cursor = cursor->left;
+                cursor = left;
             }
 
             cursor = trace_stack.top();
             trace_stack.pop();  
 
             if (cursor) {
+                Node* right = cursor->getRight();
+
                 if (
-                    cursor->right
+                    right
                     && trace_stack.size() > 0
-                    && trace_stack.top() == cursor->right
+                    && trace_stack.top() == right
                 ) {
                     trace_stack.pop();
                     trace_stack.push(cursor);
-                    cursor = cursor->right;
+                    cursor = right;
                 } else {
-                    order.push_back(cursor->key); 
+                    order.push_back(cursor->getKey()); 
                     cursor = 0;
                 }
             }
@@ -186,18 +217,17 @@ public:
      * @description
      *  print order vector after format
      */
-    static void printTraversalOrder(const vector<Key>& order, const string& prefix) {
+    static void printTraversalOrder(const std::vector<Key>& order, const std::string& prefix) {
         unsigned int size = order.size();
 
-        cout << prefix << endl;
+        std::cout << prefix << std::endl;
         for (unsigned int i = 0; i < size; ++i) {
-            cout << order[i];
+            std::cout << order[i];
             if (i < size - 1)
-                cout << " > ";
+                std::cout << " > ";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 };
 
-#endif /* AlgoBinaryTree */
-
+#endif /* Algo_BinaryTree */
