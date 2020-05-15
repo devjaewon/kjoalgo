@@ -34,10 +34,6 @@ public:
         this->key = new_key;
     }
 
-    /**
-     * @description
-     *  getter, setter
-     */
     Node* getLeft() {
         return ((Node**) this->children)[0];
     }
@@ -103,25 +99,25 @@ public:
 
         std::vector<Node*> trace;
         Node* cursor = (Node*) this->root;
-        bool is_left_direction;
+        bool to_left;
         
         trace.reserve(cursor->getHeight());
 
         while (cursor) {
-            is_left_direction = cursor->getKey() > new_key;
+            to_left = cursor->getKey() > new_key;
             trace.push_back(cursor);
-            cursor = is_left_direction ? cursor->getLeft() : cursor->getRight();
+            cursor = to_left ? cursor->getLeft() : cursor->getRight();
         }
 
         Node* leaf_node = trace.back();
         Node* new_node = new Node{ new_key };
 
-        if (is_left_direction)
+        if (to_left)
             leaf_node->setLeft(new_node);
         else
             leaf_node->setRight(new_node);
         
-        rebalance(trace);
+        this->root = Tree::rebalance(trace);
     }
 
     /**
@@ -129,7 +125,7 @@ public:
      *  rebalance total tree height
      *  - use rotation
      */
-    void rebalance(std::vector<Node*> trace) {
+    static Node* rebalance(std::vector<Node*> trace) {
         Node* new_root = trace[0];
         int index = trace.size() - 1;
         // std:: cout << new_root->getKey() << std::endl;
@@ -171,8 +167,7 @@ public:
             index--;
         }
 
-        this->root = new_root;
-        return;
+        return new_root;
     };
 
     /**
