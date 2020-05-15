@@ -10,14 +10,14 @@ int main() {
     tree.insert(10);
     tree.insert(45);
     tree.insert(5);
-    tree.printPathByInOrder();
+    tree.printTree();
     tree.insert(2);
-    tree.printPathByInOrder();
+    tree.printTree();
     tree.insert(25);
-    tree.printPathByInOrder();
+    tree.printTree();
     tree.insert(26);
     tree.insert(27);
-    tree.printPathByInOrder();
+    tree.printTree();
 
     return 0;
 }
