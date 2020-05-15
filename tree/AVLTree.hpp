@@ -128,7 +128,6 @@ public:
     static Node* rebalance(std::vector<Node*> trace) {
         Node* new_root = trace[0];
         int index = trace.size() - 1;
-        // std:: cout << new_root->getKey() << std::endl;
 
         while (index >= 0) {
             Node* parent = trace[index];
