@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include "./Tree.hpp"
 #include "./BinarySearchTree.hpp"
 
 /**
@@ -36,7 +37,8 @@ public:
     RBTNode() : Algo::BinaryTreeNode<Key>() {}
     RBTNode(const Key& new_key) : Algo::BinaryTreeNode<Key>() {
         this->children = new Node*[2] { 0, 0 };
-        this->children_count = 2;
+        this->children_length = 2;
+        this->children_count = 0;
         this->key = new_key;
         color = Color::RED;
     }
@@ -54,11 +56,23 @@ public:
     }
 
     void setLeft(Node* node_ptr) {
-        ((Node**) this->children)[0] = node_ptr;
+        Node** children = (Node**) this->children;
+
+        if (!children[0] && node_ptr)
+            this->children_count++;
+        else if (children[0] && !node_ptr)
+            this->children_count--;
+        children[0] = node_ptr;
     }
 
     void setRight(Node* node_ptr) {
-        ((Node**) this->children)[1] = node_ptr;
+        Node** children = (Node**) this->children;
+
+        if (!children[1] && node_ptr)
+            this->children_count++;
+        else if (children[1] && !node_ptr)
+            this->children_count--;
+        children[1] = node_ptr;
     }
 
     void setColor(Color new_color) {

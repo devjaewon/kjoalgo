@@ -32,7 +32,8 @@ public:
     BinaryTreeNode() : Algo::TreeNode<Key>() {}
     BinaryTreeNode(const Key& new_key) : Algo::TreeNode<Key>() {
         this->children = new Node*[2] { 0, 0 };
-        this->children_count = 2;
+        this->children_length = 2;
+        this->children_count = 0;
         this->key = new_key;
     }
 
@@ -49,11 +50,23 @@ public:
     }
 
     void setLeft(Node* node_ptr) {
-        ((Node**) this->children)[0] = node_ptr;
+        Node** children = (Node**) this->children;
+
+        if (!children[0] && node_ptr)
+            this->children_count++;
+        else if (children[0] && !node_ptr)
+            this->children_count--;
+        children[0] = node_ptr;
     }
 
     void setRight(Node* node_ptr) {
-        ((Node**) this->children)[1] = node_ptr;
+        Node** children = (Node**) this->children;
+
+        if (!children[1] && node_ptr)
+            this->children_count++;
+        else if (children[1] && !node_ptr)
+            this->children_count--;
+        children[1] = node_ptr;
     }
 };
 
