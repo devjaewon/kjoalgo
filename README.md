@@ -1,6 +1,10 @@
 # Algorithms' implementation
 
-## Contents
+## Shortest Path
+
+- Dijkstra
+
+## Data Structure
 
 ### Tree
 - Binary Tree - [Source Code](https://github.com/load0ne/algo/blob/master/tree/BinaryTree.hpp)
