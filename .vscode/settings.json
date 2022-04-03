@@ -4,6 +4,5 @@
         "vector": "cpp",
         "string": "cpp",
         "iosfwd": "cpp",
-        "functional": "cpp"
     }
 }
