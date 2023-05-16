@@ -1,6 +1,6 @@
 /**
  * @description 
- *  <성능적인 특징>
+ *  <performance>
  *  1번. (floor(n / size) + n) * push 하는 것 보다
  *  2번. floor(n / size) * (push + slice) 하는 것이 더 빠르고 메모리 효율성이 높다.
  *  
