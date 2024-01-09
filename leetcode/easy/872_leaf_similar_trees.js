@@ -34,7 +34,7 @@ var leafSimilar = function (rootA, rootB) {
     return true;
 };
 
-function doDfs(treeNode, callback, isNotRoot) {
+function doDfsByRecursive(treeNode, callback, isNotRoot) {
     if (!isNotRoot) {
         callback(treeNode, treeNode.left === null && treeNode.right === null);
     }
@@ -58,4 +58,20 @@ function getChildren(node) {
     }
 
     return children;
+}
+
+function doDfs(treeNode, callback) {
+    const stack = [treeNode];
+
+    while (stack.length > 0) {
+        const node = stack.pop();
+        const children = getChildren(node);
+        const isLeafNode = children.length === 0;
+
+        callback(node, isLeafNode);
+
+        for (let i = children.length - 1; i >= 0; i--) {
+            stack.push(children[i]);
+        }
+    }
 }
